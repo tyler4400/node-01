@@ -1,6 +1,13 @@
 {
   "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
     "cpu-stat": "^2.0.1",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "iconv-lite": "latest"
+  },
+  "devDependencies": {
+    "body-parser": "^1.19.0",
+    "request": "^2.88.2",
+    "socket.io": "^2.3.0"
   }
 }

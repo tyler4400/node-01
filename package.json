@@ -4,6 +4,8 @@
     "cpu-stat": "^2.0.1",
     "express": "^4.17.1",
     "iconv-lite": "latest",
+    "koa": "^2.11.0",
+    "koa-router": "^8.0.8",
     "mongodb": "^3.5.4",
     "mongoose": "^5.9.2"
   },

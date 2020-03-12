@@ -1702,6 +1702,11 @@ tough-cookie@~2.5.0:
     psl "^1.1.28"
     punycode "^2.1.1"
 
+trek-captcha@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.npmjs.org/trek-captcha/-/trek-captcha-0.4.0.tgz#21b57c49e2d431c266aff2100ccab33b6e13c0c0"
+  integrity sha512-3m27WCdBAqgdkpzoertvnLZwhw+c49XhZaUVajXixcoaW6EsLQX883ZHrzQLye4nH5QZ9Qk1dt4n6HuwHmgOSQ==
+
 tsscmp@1.0.6:
   version "1.0.6"
   resolved "https://registry.npmjs.org/tsscmp/-/tsscmp-1.0.6.tgz#85b99583ac3589ec4bfef825b5000aa911d605eb"

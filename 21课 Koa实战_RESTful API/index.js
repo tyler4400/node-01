@@ -21,7 +21,7 @@ const SESS_CONFIG = {
 };
 
 // 为koa上下文扩展一些校验方法
-const bouncer = require("koa-bouncer");
+const bouncer = require("koa-bouncer"); // 用于表单校验
 app.use(bouncer.middleware());
 
 // 注册
@@ -93,11 +93,11 @@ app.use(async (ctx, next) => {
 
 // const index = require('./routes/index');
 const users = require('./routes/users');
-// const api = require('./routes/api');
-// app.use(index.routes());
 app.use(users.routes());
+const api = require('./routes/api');
+app.use(api.routes());
+// app.use(index.routes());
 // app.use(require('./routes/students').routes())
-// app.use(api.routes());
 
 
 

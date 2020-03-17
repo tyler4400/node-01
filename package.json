@@ -15,7 +15,8 @@
     "koa2-cors": "^2.0.6",
     "mongodb": "^3.5.4",
     "mongoose": "^5.9.2",
-    "redis": "^3.0.2"
+    "redis": "^3.0.2",
+      "process": "latest"
   },
   "devDependencies": {
     "body-parser": "^1.19.0",

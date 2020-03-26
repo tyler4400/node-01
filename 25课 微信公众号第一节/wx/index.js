@@ -22,9 +22,9 @@ app.use(statics(__dirname + '/public'));
 app.use(async (ctx, next) => {
     console.log('>>>>>>>>>>>>>>>>>>incoming request:');
     console.log(ctx.request);
-    try{
+    try {
         await next();
-    }catch (e) {
+    } catch (e) {
         console.log('>>>>>>>>>>>>>>>>>>>>>>>>>全局报错了');
         console.error(e);
         ctx.body = e.message;
@@ -57,7 +57,7 @@ router.get('/getTokens', async ctx => {
     const tokenUrl = getTokenServerUrl();
     const res = await axios.get(tokenUrl);
     console.log('>>>>>>>>>>>>>>>>>>从微信服务器获取access_token返回');
-    console.log(res);
+    console.log(res.data);
     Object.assign(tokenCache, res.data, {
         updateTime: Date.now()
     });
@@ -71,19 +71,35 @@ router.get('/getFollowers', async ctx => {
     const url = getFollowersUrl();
     const res = await axios.get(url);
     console.log('>>>>>>>>>>>>>>>>>>从微信服务器获取粉丝数量返回');
-    console.log(res);
+    console.log(res.data);
     ctx.body = res.data
 });
 
 /**
  * 从微信服务器获取粉丝数量（使用现有封装好的库）
+ * 使用本demo必须启动mongodb服务，token存储在mongodb中
  */
 const WechatAPI = require('co-wechat-api');
-const api = new WechatAPI(conf.appid, conf.appsecret);
+const {ServerToken} = require('./mongoose');
+const api = new WechatAPI(
+    conf.appid,
+    conf.appsecret,
+    // 取Token
+    async () => {
+        const token = await ServerToken.findOne()
+        console.log('取出的token:' + token);
+    },
+    // 存Token
+    async token => {
+        await ServerToken.updateOne({}, token, {upsert: true})
+        console.log('放入的token:' + token);
+    }
+);
 router.get('/getFollowersAPI', async ctx => {
     let res = await api.getFollowers();
+    console.log(res.data);
     ctx.body = res
-})
+});
 
 function getMsg(msg){
     const content = msg.Content || '';

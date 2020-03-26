@@ -11,36 +11,100 @@ const Koa = require('koa');
 const Router = require('koa-router');
 const statics = require('koa-static');
 const bodyParser = require('koa-bodyparser');
+const axios = require('axios');
 
 const conf = require('./conf');
 
 const app = new Koa();
 app.use(bodyParser());
-app.use(statics(__dirname + '/'));
+app.use(statics(__dirname + '/public'));
 
 app.use(async (ctx, next) => {
+    console.log('>>>>>>>>>>>>>>>>>>incoming request:');
     console.log(ctx.request);
-    await next();
+    try{
+        await next();
+    }catch (e) {
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>全局报错了');
+        console.error(e);
+        ctx.body = e.message;
+    }
 });
 
 const router = new Router();
 const wechat = require('co-wechat');
 
+/**
+ * 接受微信服务器的消息接口，并返回相应结果
+ */
 router.all('/wechat', wechat(conf).middleware(
     async message => {
-        console.log('input message:');
+        console.log('>>>>>>>>>>>>>>>>>>微信消息接口');
         console.log(message);
         return getMsg(message);
     }
-))
+));
+
+/**
+ * 从微信服务器获取access_token
+ */
+const tokenCache = {
+    access_token: '',
+    updateTime: Date.now(),
+    expires_in: 7200
+};
+router.get('/getTokens', async ctx => {
+    const tokenUrl = getTokenServerUrl();
+    const res = await axios.get(tokenUrl);
+    console.log('>>>>>>>>>>>>>>>>>>从微信服务器获取access_token返回');
+    console.log(res);
+    Object.assign(tokenCache, res.data, {
+        updateTime: Date.now()
+    });
+    ctx.body = res.data
+});
+
+/**
+ * 从微信服务器获取粉丝数量
+ */
+router.get('/getFollowers', async ctx => {
+    const url = getFollowersUrl();
+    const res = await axios.get(url);
+    console.log('>>>>>>>>>>>>>>>>>>从微信服务器获取粉丝数量返回');
+    console.log(res);
+    ctx.body = res.data
+});
+
+/**
+ * 从微信服务器获取粉丝数量（使用现有封装好的库）
+ */
+const WechatAPI = require('co-wechat-api');
+const api = new WechatAPI(conf.appid, conf.appsecret);
+router.get('/getFollowersAPI', async ctx => {
+    let res = await api.getFollowers();
+    ctx.body = res
+})
 
 function getMsg(msg){
     const content = msg.Content || '';
-    if(content.includes('?')) return '请以?结束你的问题';
-    if(content === '?' || content === '？') return '尽管问，答错了算我输!';
+    if (content.includes('?')) return '请以?结束你的问题';
+    if (content === '?' || content === '？') return '尽管问，答错了算我输!';
     return content.replace(/[?？]/g, '!').replace('吗', '')
+}
+
+function getTokenServerUrl(){
+    const wxDomain = `https://api.weixin.qq.com`;
+    const path = `/cgi-bin/token`;
+    const param = `?grant_type=client_credential&appid=${conf.appid}&secret=${conf.appsecret}`;
+    return wxDomain + path + param;
+}
+
+function getFollowersUrl(){
+    return `https://api.weixin.qq.com/cgi-bin/user/get?access_token=${tokenCache.access_token}`
 }
 
 app.use(router.routes());
 app.use(router.allowedMethods());
-app.listen(8080);
+app.listen(8080, () => {
+    console.log('app listens at port 8080');
+});

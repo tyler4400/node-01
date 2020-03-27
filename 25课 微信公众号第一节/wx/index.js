@@ -13,7 +13,8 @@ const statics = require('koa-static');
 const bodyParser = require('koa-bodyparser');
 const axios = require('axios');
 
-const conf = require('./conf');
+// const conf = require('./conf');
+const conf = require('./conf.test.js');
 
 const app = new Koa();
 app.use(bodyParser());
@@ -76,7 +77,7 @@ router.get('/getFollowers', async ctx => {
 });
 
 /**
- * 从微信服务器获取粉丝数量（使用现有封装好的库）
+ * 从微信服务器获取菜单配置（使用现有封装好的库）
  * 使用本demo必须启动mongodb服务，token存储在mongodb中
  */
 const WechatAPI = require('co-wechat-api');
@@ -95,8 +96,8 @@ const api = new WechatAPI(
         console.log('放入的token:' + token);
     }
 );
-router.get('/getFollowersAPI', async ctx => {
-    let res = await api.getFollowers();
+router.get('/getMenu', async ctx => {
+    let res = await api.getMenu();
     console.log(res.data);
     ctx.body = res
 });

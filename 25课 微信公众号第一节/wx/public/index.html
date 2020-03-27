@@ -20,7 +20,7 @@
 <div id="app">
     <cube-button @click='getTokens'>getTokens</cube-button>
     <cube-button @click='getFollowers'>getFollowers</cube-button>
-    <cube-button @click='apiGetFollowers'>api-getFollowers</cube-button>
+    <cube-button @click='apiGetFollowers'>getMenu</cube-button>
     {{res}}
 </div>
 <script>
@@ -43,7 +43,7 @@
                 console.log('res', res)
             },
             async apiGetFollowers(){
-                const res = await axios.get('/getFollowersAPI');
+                const res = await axios.get('/getMenu');
                 this.res = res.data;
                 console.log('res', res)
             }

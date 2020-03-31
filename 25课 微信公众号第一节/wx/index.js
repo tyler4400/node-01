@@ -6,6 +6,7 @@
  * 在微信管理系统上配置服务器
  * 运行本js。
  * 注意上面三者必须一一对应。
+ * 打开浏览器 origin/index.html
  */
 const Koa = require('koa');
 const Router = require('koa-router');
@@ -119,6 +120,13 @@ function getTokenServerUrl(){
 function getFollowersUrl(){
     return `https://api.weixin.qq.com/cgi-bin/user/get?access_token=${tokenCache.access_token}`
 }
+
+/**
+ * 微信网页端开发demo
+ * @type {module:koa-router|Router}
+ */
+const webRouters = require('./router/web');
+app.use(webRouters.routes());
 
 app.use(router.routes());
 app.use(router.allowedMethods());

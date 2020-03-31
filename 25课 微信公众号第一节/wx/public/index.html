@@ -18,8 +18,16 @@
 
 <body>
 <div id="app">
+    <p>服务端demo</p>
     <cube-button @click='getTokens'>getTokens</cube-button>
     <cube-button @click='getFollowers'>getFollowers</cube-button>
+    <cube-button @click='apiGetFollowers'>getMenu</cube-button>
+    <p>网页端demo</p>
+    <cube-button @click='wxAuthorize'>微信授权第三方登录（snsapi_userinfo）</cube-button>
+    <span v-show="openid">openid: {{openid}}</span>
+    <cube-button @click='getUser'>登录后获取用户信息</cube-button>
+    <img :src="user.headimgurl" alt="">
+    <span v-show="user">{{user}}</span>
     <cube-button @click='apiGetFollowers'>getMenu</cube-button>
     {{res}}
 </div>
@@ -28,7 +36,9 @@
         el: '#app',
         data: {
             value: 'input',
-            res: ''
+            res: '',
+            openid: '',
+            user: ''
         },
 
         methods: {
@@ -46,10 +56,29 @@
                 const res = await axios.get('/getMenu');
                 this.res = res.data;
                 console.log('res', res)
-            }
+            },
+            async wxAuthorize(){
+                window.location.href = '/web/wxAuthorize';
+
+                // 开始是如下这样写的，造成了ajax重定向跨域， 见：http://www.voidcn.com/article/p-xwaboaax-oe.html
+                // const res = await axios.get('/web/wxAuthorize'); //后端返回302和一个url；那么ajax会根据htpp的code吗做出相对应的动作
+                // this.res = res.data;
+                // console.log('res', res)
+            },
+            async getUser(){
+                const qs = Qs.parse(window.location.search.substr(1));
+                const res = await axios.get('/web/getUser', {
+                    params: {
+                        openid: qs.openid
+                    }
+                });
+                this.user = res.data;
+                console.log('User', res.data)
+            },
         },
         mounted: function (){
-
+            const qs = Qs.parse(window.location.search.substr(1)) || '';
+            this.openid = qs.openid || '';
         },
     });
 </script>

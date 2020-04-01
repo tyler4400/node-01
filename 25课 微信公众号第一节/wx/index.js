@@ -97,6 +97,7 @@ const api = new WechatAPI(
         console.log('放入的token:' + token);
     }
 );
+exports.api = api;
 router.get('/getMenu', async ctx => {
     let res = await api.getMenu();
     console.log(res.data);

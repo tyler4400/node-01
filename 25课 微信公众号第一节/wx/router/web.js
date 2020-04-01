@@ -5,6 +5,7 @@ const Router = require('koa-router');
 const router = new Router({prefix: '/web'});
 
 const conf = require('../conf.test.js');
+const {api} = require('../index');
 const {ClientToken} = require('.././mongoose');
 const OAuth = require('co-wechat-oauth');
 const oauth = new OAuth(conf.appid, conf.appsecret,
@@ -57,6 +58,14 @@ router.get('/getUser', async ctx => {
     console.log(userInfo);
     ctx.body = userInfo;
 
+});
+
+/**
+ * 获取
+ */
+router.get('/getJSConfig', async ctx => {
+    const res = await api.getJsConfig(ctx.query);
+    ctx.body = res;
 });
 
 module.exports = router;

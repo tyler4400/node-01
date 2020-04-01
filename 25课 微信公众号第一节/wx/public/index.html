@@ -22,14 +22,17 @@
     <cube-button @click='getTokens'>getTokens</cube-button>
     <cube-button @click='getFollowers'>getFollowers</cube-button>
     <cube-button @click='apiGetFollowers'>getMenu</cube-button>
+    {{res}}
     <p>网页端demo</p>
     <cube-button @click='wxAuthorize'>微信授权第三方登录（snsapi_userinfo）</cube-button>
     <span v-show="openid">openid: {{openid}}</span>
     <cube-button @click='getUser'>登录后获取用户信息</cube-button>
     <img :src="user.headimgurl" alt="">
     <span v-show="user">{{user}}</span>
-    <cube-button @click='apiGetFollowers'>getMenu</cube-button>
-    {{res}}
+    <cube-button @click='getJSConfig'>获取JSsdkConfig</cube-button>
+    {{msg}}
+    <cube-button @click='share'>使用分享接口</cube-button>
+
 </div>
 <script>
     var app = new Vue({
@@ -38,7 +41,8 @@
             value: 'input',
             res: '',
             openid: '',
-            user: ''
+            user: '',
+            msg: ''
         },
 
         methods: {
@@ -75,6 +79,32 @@
                 this.user = res.data;
                 console.log('User', res.data)
             },
+            async getJSConfig(){
+                this.msg = wx.toString();
+                console.log('wx', wx);
+                const res = await axios.get('/web/getJSConfig', {
+                    params: {
+                        url: window.location.href
+                    }
+                });
+                res.data.jsApiList = ['updateAppMessageShareData'];
+                wx.config(res.data);
+                wx.ready(function (){
+                    this.msg = 'wx is ready';
+                })
+            },
+            share(){
+                wx.updateAppMessageShareData({
+                    title: '测试', // 分享标题
+                    desc: '这是一个分享', // 分享描述
+                    link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                    imgUrl: this.user.headimgurl, // 分享图标
+                    success: () =>{
+                        alert('可以去右上角分享了');
+                        this.msg = '可以去右上角分享了';
+                    }
+                })
+            }
         },
         mounted: function (){
             const qs = Qs.parse(window.location.search.substr(1)) || '';
